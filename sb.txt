@@ -1,5 +1,11 @@
 sing-box官方SFA/SFI/SFW客户端配置简要说明
-小白关键点操作指南 V23.11.15（不定时更新）
+小白关键点操作指南 V24.01.15（不定时更新）
+
+【重要更新】v2rayNG/v2rayN 更新说明
+================================================================================
+自 Xray-core v26.2.6 版本起，已正式移除 `allowInsecure` 参数。
+对于使用自签证书的 Hysteria2、TUIC5 等协议，推荐使用 `pinnedPeerCertSha256` 进行证书固定。
+参考: https://github.com/2dust/v2rayN/discussions/9460
 
 注意：小白在自己的sing-box配置文件中，只要改动节点区与分流组这两块区域即可
 ------------------------------------------------------------------------------------
@@ -21,11 +27,11 @@ sing-box官方SFA/SFI/SFW客户端配置简要说明
           "enabled": true,
           "fingerprint": "chrome"
         },
-      "reality": {
-          "enabled": true,
-          "public_key": "oBwBeiq8MjOqHS0fTXm39gRM_fdXgbAvtEWfAaW",        自定义的public-key
-          "short_id": "91b4db47"                                          自定义的short-id
-        }
+       "reality": {
+           "enabled": true,
+           "public_key": "oBwBeiq8MjOqHS0fTXm39gRM_fdXgbAvtEWfAaW",        自定义的public-key
+           "short_id": "91b4db47"                                          自定义的short-id
+         }
       }
     },
 
@@ -34,105 +40,120 @@ sing-box官方SFA/SFI/SFW客户端配置简要说明
 二、vmess-ws(tls)+argo节点
 ------------------------------------------------------------------------------------
      {
-            "server": "1.2.3.4",                                       服务器本地ip、解析的域名、优选IP、优选域名
-            "server_port": 12345,                                      自定义的端口，vps-cdn与argo-cdn，注意13个端口变化
-            "tag": "vmess-sb",                                         自定义节点名称
-            "tls": {
-                "enabled": true,                                       tls开启：true   tls关闭：false    
-                "server_name": "yg.ygkkk.eu.org",                      tls开启：解析的域名或者argo域名   
-                "insecure": false,
-                "utls": {
-                    "enabled": true,
-                    "fingerprint": "chrome"
-                }
-            },
-            "transport": {
-                "headers": {
-                    "Host": [
-                        "yg.ygkkk.eu.org"                              解析的域名或者argo域名
-                    ]
-                },
-                "path": "658ff7f4-0448-4368-a104-c3108517f56a-vm",     自定义的uuid值-vm
-                "type": "ws"
-            },
-            "type": "vmess",
-            "security": "auto",
-            "uuid": "658ff7f4-0448-4368-a104-c3108517f56a"             自定义的uuid
-        },
+             "server": "1.2.3.4",                                       服务器本地ip、解析的域名、优选IP、优选域名
+             "server_port": 12345,                                      自定义的端口，vps-cdn与argo-cdn，注意13个端口变化
+             "tag": "vmess-sb",                                         自定义节点名称
+             "tls": {
+                 "enabled": true,                                       tls开启：true   tls关闭：false    
+                 "server_name": "yg.ygkkk.eu.org",                      tls开启：解析的域名或者argo域名   
+                 "insecure": false,
+                 "utls": {
+                     "enabled": true,
+                     "fingerprint": "chrome"
+                 }
+             },
+             "transport": {
+                 "headers": {
+                     "Host": [
+                         "yg.ygkkk.eu.org"                              解析的域名或者argo域名
+                     ]
+                 },
+                 "path": "658ff7f4-0448-4368-a104-c3108517f56a-vm",     自定义的uuid值-vm
+                 "type": "ws"
+             },
+             "type": "vmess",
+             "security": "auto",
+             "uuid": "658ff7f4-0448-4368-a104-c3108517f56a"             自定义的uuid
+         },
 
 ------------------------------------------------------------------------------------        
-三、hysteria2节点
+三、hysteria2节点（自签证书 - 使用证书固定）
 ------------------------------------------------------------------------------------
-    {
-        "type": "hysteria2",
-        "tag": "hy2-sb",                                           自定义节点名称
-        "server": "1.2.3.4",                                       自签证书：服务器本地ip   域名证书：解析的域名
-        "server_port": 12345,                                      自定义的端口
-        "password": "658ff7f4-0448-4368-a104-c3108517f56a",        自定义的uuid
-        "tls": {
-            "enabled": true,
-            "server_name": "www.bing.com",                         自签证书：www.bing.com   域名证书：解析的域名
-            "insecure": true,                                      自签证书：true           域名证书：false
-            "alpn": [
-                "h3"
-            ]
-        }
-    },
+     {
+         "type": "hysteria2",
+         "tag": "hy2-sb",                                           自定义节点名称
+         "server": "1.2.3.4",                                       自签证书：服务器本地ip   域名证书：解析的域名
+         "server_port": 12345,                                      自定义的端口
+         "password": "658ff7f4-0448-4368-a104-c3108517f56a",        自定义的uuid
+         "tls": {
+             "enabled": true,
+             "server_name": "www.bing.com",                         自签证书：www.bing.com   域名证书：解析的域名
+             "alpn": [
+                 "h3"
+             ],
+             "pinSHA256": "ae243d668ec9c7f74a0dcd1ad21c6676b4efe30c39728934b362093af886bf77"  证书SHA256指纹
+         }
+     },
 
+【使用pinnedPeerCertSha256方式的完整配置】:
+     {
+         "type": "hysteria2",
+         "tag": "hy2-sb",
+         "server": "1.2.3.4",
+         "server_port": 12345,
+         "password": "658ff7f4-0448-4368-a104-c3108517f56a",
+         "tls": {
+             "enabled": true,
+             "server_name": "www.bing.com",
+             "alpn": ["h3"],
+             "pinnedPeerCertSha256": "ae243d668ec9c7f74a0dcd1ad21c6676b4efe30c39728934b362093af886bf77"
+         }
+     },
 
+ 
 ------------------------------------------------------------------------------------
-四、tuic5节点
+四、tuic5节点（自签证书 - 使用证书固定）
 ------------------------------------------------------------------------------------
-        {
-            "type":"tuic",
-            "tag": "tuic5-sb",                                       自定义节点名称
-            "server": "1.2.3.4",                                     自签证书：服务器本地ip   域名证书：解析的域名
-            "server_port": 12345,                                    自定义的端口
-            "uuid": "658ff7f4-0448-4368-a104-c3108517f56a",          自定义的uuid
-            "password": "658ff7f4-0448-4368-a104-c3108517f56a",      自定义的uuid
-            "congestion_control": "bbr",
-            "udp_relay_mode": "native",
-            "udp_over_stream": false,
-            "zero_rtt_handshake": false,
-            "heartbeat": "10s",
-            "tls":{
-                "enabled": true,
-                "server_name": "www.bing.com",                      自签证书：www.bing.com   域名证书：解析的域名
-                "insecure": true,                                   自签证书：true           域名证书：false
-                "alpn": [
-                    "h3"
-                ]
-            }
-        },
+         {
+             "type":"tuic",
+             "tag": "tuic5-sb",                                       自定义节点名称
+             "server": "1.2.3.4",                                     自签证书：服务器本地ip   域名证书：解析的域名
+             "server_port": 12345,                                    自定义的端口
+             "uuid": "658ff7f4-0448-4368-a104-c3108517f56a",          自定义的uuid
+             "password": "658ff7f4-0448-4368-a104-c3108517f56a",      自定义的uuid
+             "congestion_control": "bbr",
+             "udp_relay_mode": "native",
+             "udp_over_stream": false,
+             "zero_rtt_handshake": false,
+             "heartbeat": "10s",
+             "tls":{
+                 "enabled": true,
+                 "server_name": "www.bing.com",                      自签证书：www.bing.com   域名证书：解析的域名
+                 "alpn": [
+                     "h3"
+                 ],
+                 "pinnedPeerCertSha256": "ae243d668ec9c7f74a0dcd1ad21c6676b4efe30c39728934b362093af886bf77"
+             }
+         },
 
 ------------------------------------------------------------------------------------
 五、cf-vless(tls)节点
 ------------------------------------------------------------------------------------
      {
-            "server": "1.2.3.4",                                       优选IP、优选域名
-            "server_port": 12345,                                      自定义的端口，注意13个端口变化
-            "tag": "cf-vless-sb",                                      自定义节点名称
-            "tls": {
-                "enabled": true,                                       tls开启：true   tls关闭：false    
-                "server_name": "yg.ygkkk.eu.org",                      tls开启：pages域名或者自定义域名   
-                "insecure": false,
-                "utls": {
-                    "enabled": true,
-                    "fingerprint": "chrome"
-                }
-            },
-            "transport": {
-                "headers": {
-                    "Host": [
-                        "yg.ygkkk.eu.org"                              workers、pages域名或者自定义域名
-                    ]
-                },
-                "path": "/?ed=2048",                                   path路径：/?ed=2048
-                "type": "ws"
-            },
-            "type": "vless",
-            "uuid": "658ff7f4-0448-4368-a104-c3108517f56a"             自定义的uuid
-        },
+             "server": "1.2.3.4",                                       优选IP、优选域名
+             "server_port": 12345,                                      自定义的端口，注意13个端口变化
+             "tag": "cf-vless-sb",                                      自定义节点名称
+             "tls": {
+                 "enabled": true,                                       tls开启：true   tls关闭：false    
+                 "server_name": "yg.ygkkk.eu.org",                      tls开启：pages域名或者自定义域名   
+                 "insecure": false,
+                 "utls": {
+                     "enabled": true,
+                     "fingerprint": "chrome"
+                 }
+             },
+             "transport": {
+                 "headers": {
+                     "Host": [
+                         "yg.ygkkk.eu.org"                              workers、pages域名或者自定义域名
+                     ]
+                 },
+                 "path": "/?ed=2048",                                   path路径：/?ed=2048
+                 "type": "ws"
+             },
+             "type": "vless",
+             "uuid": "658ff7f4-0448-4368-a104-c3108517f56a"             自定义的uuid
+         },
 
 
 
@@ -169,3 +190,34 @@ sing-box官方SFA/SFI/SFW客户端配置简要说明
       ]
     },
 ------------------------------------------------------------------------------------
+
+【如何获取证书SHA256指纹】
+================================================================================
+
+对于Hysteria2和TUIC5使用自签证书的情况，需要获取证书的SHA256指纹：
+
+方法一：从服务器证书文件计算（推荐）
+服务器端执行：
+openssl x509 -fingerprint -sha256 -noout -in /path/to/cert.pem
+
+方法二：从客户端连接获取（需要TLS）
+本地执行：
+openssl s_client -connect 服务器IP:端口 -servername 域名 </dev/null 2>/dev/null | openssl x509 -fingerprint -sha256 -noout
+
+【v2rayNG 1.9.x+ / v2rayN 7.22.5+ 使用说明】
+================================================================================
+
+① Hysteria2 协议配置：
+- 选择协议：Hysteria2
+- 填写 allowInsecure：改为使用 pinnedPeerCertSha256
+- pinSHA256/证书指纹：填入获取到的SHA256指纹（可包含冒号分隔或纯十六进制）
+
+② TUIC5 协议配置：
+- 选择协议：TUIC
+- 填写 allowInsecure：改为使用 pinnedPeerCertSha256
+- pinSHA256/证书指纹：填入获取到的SHA256指纹
+
+③ 注意事项：
+- Let's Encrypt 证书约 90 天过期，续签后指纹会改变，需要重新填入
+- 自签名证书不会改变，可以一直使用
+- 对于生产环境，建议固定中间CA的指纹而非叶证书，稳定性更高
